@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "+eI6fTKOk+Y1/YqygP8BihwYnFSbJN4F+mIe37J+Hc+9fYSuVzSUIX64sdwQ4mmeDq69JS3KjREA/CaKB6B19Q==",
+  "success": true,
+  "projectFilePath": "/Users/guilhermebraga/Projects/Testes_Gene_Lacuna/Testes_Gene_Lacuna/Testes_Gene_Lacuna.csproj",
+  "expectedPackageFiles": [
+    "/Users/guilhermebraga/.nuget/packages/newtonsoft.json/13.0.1/newtonsoft.json.13.0.1.nupkg.sha512",
+    "/Users/guilhermebraga/.nuget/packages/restsharp/108.0.1/restsharp.108.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}
