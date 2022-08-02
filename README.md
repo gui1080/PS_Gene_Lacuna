@@ -10,4 +10,4 @@ Github: https://github.com/gui1080/
 
 Feito em Microsoft Visual Studio
 
-Brasília, Julho de 2022
+Brasília, Julho/Agosto de 2022
