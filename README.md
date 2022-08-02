@@ -6,7 +6,7 @@ Requisitos da tarefa: https://gene.lacuna.cc/
 
 LinkedIn: https://www.linkedin.com/in/gui8600k/
 
-Github: https://github.com/gui1080/
+Github: https://github.com/gui1080/PS_Gene_Lacuna
 
 Feito em Microsoft Visual Studio
 
