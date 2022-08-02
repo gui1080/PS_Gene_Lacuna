@@ -1,7 +1,7 @@
 ﻿// Guilherme Braga
 // https://www.linkedin.com/in/gui8600k/
 // Cópia no Github -> https://github.com/gui1080/Testes_Gene_Lacuna
-// Julho 2022
+// Julho/Agosto 2022
 
 using System;
 using System.Text;
@@ -67,13 +67,18 @@ class Program
 
         var autenticador_resposta = autenticador_client.Post(autenticador_request);
 
-        dynamic resposta_parsed = JsonConvert.DeserializeObject(autenticador_resposta.Content);
+        string token = "erro";
 
-        string token = resposta_parsed.accessToken;
+        if (autenticador_resposta != null)
+        {
+            dynamic resposta_parsed = JsonConvert.DeserializeObject(autenticador_resposta.Content);
 
-        Console.Write("\n");
-        Console.WriteLine(token);
-        Console.Write("\n");
+            token = resposta_parsed.accessToken;
+
+            Console.Write("\n");
+            Console.WriteLine(token);
+            Console.Write("\n");
+        }
 
         // pedindo o job
         //------------------------------------------------------------
@@ -159,6 +164,41 @@ class Program
             // header -> auth token
             // body -> strand
 
+            // criar umas variáveis que eu possa usar em todas as respostas
+            // url = base + /api/dna/jobs/{job_id}/gene'
+            // já fiz classes para o body das respostas
+
+            Console.WriteLine("Começando chamadas API! Retornando resposta gerada.");
+
+            string resposta_url = "https://gene.lacuna.cc/api/dna/jobs/" + job_id + "/decode";
+
+            Console.WriteLine(resposta_url);
+
+            var resposta_client = new RestClient(resposta_url);
+
+            var resposta_request = new RestRequest();
+
+            resposta_request.AddHeader("Authorization", token);
+
+            var post_resposta_decode_body = new post_resposta_decode { strand = "0b" + feedback_bin };
+
+            resposta_request.AddJsonBody(post_resposta_decode_body);
+
+            var resposta_post = resposta_client.Post(resposta_request);
+
+            if(resposta_post != null){
+
+                dynamic resposta_post_parsed = JsonConvert.DeserializeObject(resposta_post.Content);
+
+                string result_resposta_post = resposta_post_parsed.code;
+                string mensagem_resposta_post = resposta_post_parsed.message;
+
+
+                Console.WriteLine("Resposta!");
+                Console.WriteLine(result_resposta_post);
+                Console.WriteLine(mensagem_resposta_post);
+            }
+
         }
 
         // ENCODE
@@ -180,7 +220,7 @@ class Program
             Console.WriteLine("Input");
             Console.WriteLine(input_string);
 
-            feedback_bits = Encode(input_string);
+            feedback_bits = "0b" + Encode(input_string);
 
             Console.WriteLine("Output");
             Console.WriteLine(feedback_bits);
@@ -195,6 +235,40 @@ class Program
             // header -> auth token
             // body -> strandEncoded
 
+
+            Console.WriteLine("Começando chamadas API! Retornando resposta gerada.");
+
+            string resposta_url = "https://gene.lacuna.cc/api/dna/jobs/" + job_id + "/encode";
+
+            Console.WriteLine(resposta_url);
+
+            var resposta_client = new RestClient(resposta_url);
+
+            var resposta_request = new RestRequest();
+
+            resposta_request.AddHeader("Authorization", token);
+
+            var post_resposta_encode_body = new post_resposta_encode { strandEncoded = feedback_bits };
+
+            resposta_request.AddJsonBody(post_resposta_encode_body);
+
+            // request failed with status bad request!!!
+            var resposta_post = resposta_client.Post(resposta_request);
+
+            if (resposta_post != null)
+            {
+
+                dynamic resposta_post_parsed = JsonConvert.DeserializeObject(resposta_post.Content);
+
+                string result_resposta_post = resposta_post_parsed.code;
+                string mensagem_resposta_post = resposta_post_parsed.message;
+
+                Console.WriteLine("Resposta!");
+                Console.WriteLine(result_resposta_post);
+                Console.WriteLine(mensagem_resposta_post);
+
+
+            }
 
         }
 
@@ -218,7 +292,7 @@ class Program
             // vou passar tudo pra binário pra ficar mais preciso
             // encontrei erros comparando as strings em base de 64
             // algo que seria mais otimizado seria agrupar de 2 em 2 bits com nomenclatura "ATCG",
-            // o resultado seria comparação de strings menores. Vou comparar bit com bit para fazer reúso de código
+            // o resultado seria comparação de strings menores. Vou comparar bit com bit para fazer d reúso de código
             dna_strand = conteudo_job.strandEncoded;
             gene = conteudo_job.geneEncoded; 
 
@@ -249,13 +323,46 @@ class Program
             // header -> auth token
             // body -> is bool
 
+            Console.WriteLine("Começando chamadas API! Retornando resposta gerada.");
+
+            string resposta_url = "https://gene.lacuna.cc/api/dna/jobs/" + job_id + "/gene";
+
+            Console.WriteLine(resposta_url);
+
+            var resposta_client = new RestClient(resposta_url);
+
+            var resposta_request = new RestRequest();
+
+            resposta_request.AddHeader("Authorization", token);
+
+            var post_resposta_decode_body = new post_resposta_check_gene { isActivated = resultado };
+
+            resposta_request.AddJsonBody(post_resposta_decode_body);
+
+            var resposta_post = resposta_client.Post(resposta_request);
+
+            if (resposta_post != null)
+            {
+
+                dynamic resposta_post_parsed = JsonConvert.DeserializeObject(resposta_post.Content);
+
+                string result_resposta_post = resposta_post_parsed.code;
+                string mensagem_resposta_post = resposta_post_parsed.message;
+
+
+                Console.WriteLine("Resposta!");
+                Console.WriteLine(result_resposta_post);
+                Console.WriteLine(mensagem_resposta_post);
+            }
+
         }
 
         Console.WriteLine("Fim de execução!");
 
     }
 
-
+    // resultado em string!!!!!!!!!!!
+    // falta
     public static string Decode(string input_string)
     {
         // passa de base64 para sting de bytes
@@ -413,3 +520,9 @@ public static class Extensions
         return source.Substring(start, len); 
     }
 }
+
+/*
+1011001010000011111010000110110101000111011010110100000101000100100101000011101010100000010001001101001100110111011110100001110011111000101111111010110000111001011100011010010001011001111110100111000010001100101011011001100101011000011010101100010111110110000100010110101101100000010000110000011011111011101001010111001010100100000001101010001000111100100001111001111111100001011000011000010100101110101001000111100010011000111111110110000010000001001010101110110111111100101110111011111010100111111011000010100101110100101010100011001101100111110101100011011100010101111111010001100100101110111000011011110100000011010110110001010010010110110111011110001100010100001010011100011001001101010111010001000100001011110111100001100100011000111111101110101010111111101011111100100001110111100010100011101110100110010001101111001101001110000110001010011101011111011010100001111010100011011111101100111111011000011001101101110111011011100100111100001001100011001001100100110000100010010111001111011100011101111111001111111100101110011011100011000111110101100010111101000111011001111011111001011011110000110001100001000100011110111011101111001111110011011010000110000001001010010000001001011100001100111001000001110000000101000100110110001111101110100001001110101011111011001100000001110010101000001100001111101111101100101011101111001011111110111111110111011001000111111010101100110010110000010001000011011101011001001011101111001110010111110100111011110001100111001000101000100100010100111011110111100001101101111010100110101110101100111101001001011011110101011101101011111011111000000001101011101001101101010010110100000000100001110001011111100101010000010101001100111000101011100101010101010111110110011000110101110001011111010000000000110101110001110110001011111101111010100100000001010000001011100110111111011000110101101110111100111001111001011000010010100000111001001010101000011101111011010001010101110110010000110000111001101010101001010000100101010100010101101101011001000100111010100101010011010110110000100001100010110111111011111100101011101100101100000101100010101000000011000110101001100100000000
+
+010011011100101111010010010000111100011100101011000111000000010101001111000111101110101111011011001011101011000101000000000010100001101010011011000001001101100101100111001101110010010100000101110000011100100000110011101100001101000011001100011100110101011011111110010101110111000011011110000110000000011110100111100110010100111011000101111111110101101011100110001010011101111010010011100100111101111110111011011000001110000010001101100101110001011010100110110011001000001011111110111110000110101100110100100000101010101110010100110111001101011101000001011000011111001000010011111100110110101010001011
+*/
